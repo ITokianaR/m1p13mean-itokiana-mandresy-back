@@ -4,6 +4,7 @@
   "description": "backend app",
   "main": "index.js",
   "type": "module",
+
   "scripts": {
     "dev": "nodemon src/app.js"
   },
