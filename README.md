@@ -1,6 +1,6 @@
 # M1P13MEAN-itokiana-mandresy-back
 
-Foobar is a Python library for dealing with word pluralization.
+Node express project.
 
 ## Start project
 
