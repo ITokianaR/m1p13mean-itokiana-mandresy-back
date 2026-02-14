@@ -4,7 +4,7 @@ import { Router } from 'express';
 const router = Router();
 
 router.post(
-    '/user/signup', async (req, res, next) => {
+    '/register', async (req, res, next) => {
         try{
             const user = await signUp(req.body);
             res.json({ user });
@@ -16,7 +16,7 @@ router.post(
 
 
 router.post(
-    '/user/signin', async (req, res, next) => {
+    '/login', async (req, res, next) => {
         try{
             const userLogged = await signIn(req.body);
             res.json({ userLogged })

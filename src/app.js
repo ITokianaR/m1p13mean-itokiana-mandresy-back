@@ -17,7 +17,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(route);
+app.use('/api', route);
 
 app.use((err, req, res, next) => {
     res.status(err.status || 500).json({

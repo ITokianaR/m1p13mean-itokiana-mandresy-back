@@ -13,6 +13,7 @@ export const signUp = async (input) => {
     const fullname = input.fullname;
     const email = input.email.toLowerCase();
     const password = input.password;
+    const role = input.role || 'client';
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -35,6 +36,7 @@ export const signUp = async (input) => {
         fullname: fullname,
         email: email,
         password : hashedPassword,
+        role : role,
     });
 
     return user;
@@ -76,7 +78,7 @@ export const signIn = async (input) => {
         process.env.JWT_SECRET,
         { expiresIn: "1h" }
     )
-    
+
     return {
         token,
         user: {
