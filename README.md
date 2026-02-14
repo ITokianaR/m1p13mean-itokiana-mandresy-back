@@ -45,7 +45,7 @@ register
 {
     "username": "john",
     "fullname": "doe",
-    "email": "johndoe@mongo.fr",
+    "email": "johndoe@dummy.john",
     "password": "pwdspecial",
     "role": "shop"
 }
