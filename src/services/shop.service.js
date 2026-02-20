@@ -92,3 +92,8 @@ export const addShop = async (req) => {
     });
   });
 };
+
+export const getShopList = async () => {
+  const shops = await Shop.find().populate('category');
+  return shops;
+};

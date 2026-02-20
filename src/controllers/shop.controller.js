@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { addShop } from '../services/shop.service.js'
 import verifyToken from "../middlewares/verifyToken.js";
 import authorizeRoles from "../middlewares/authorizeRole.js";
-import { addCategory } from '../services/shop.service.js';
+import { addCategory, getShopList } from '../services/shop.service.js';
 
 const router = Router()
 
@@ -33,5 +33,16 @@ router.post(
     }
   }
 );
+
+router.get(
+  "/list",
+  async (req, res, next) => {
+  try {
+    const shops = await getShopList();
+    res.status(200).json({ shops });
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default router;
