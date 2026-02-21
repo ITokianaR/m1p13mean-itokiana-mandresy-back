@@ -47,6 +47,7 @@ export const addShop = async (req) => {
           location,
           openingHours,
           category,
+          phoneNumber
         } = req.body;
 
         const logoFile = req.files?.logo?.[0];
@@ -56,9 +57,9 @@ export const addShop = async (req) => {
           !name ||
           !description ||
           !location ||
-          !openingHours ||
           !category ||
           !logoFile ||
+          !phoneNumber ||
           !coverFile
         ) {
           const error = new Error("Invalid input data");
@@ -82,6 +83,7 @@ export const addShop = async (req) => {
           category: existingCategory._id,
           logo: `/storages/${logoFile.filename}`,
           coverPhoto: `/storages/${coverFile.filename}`,
+          phoneNumber
         });
 
         resolve(shop);
