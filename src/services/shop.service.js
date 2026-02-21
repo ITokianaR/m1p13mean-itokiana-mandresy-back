@@ -99,3 +99,101 @@ export const getShopList = async () => {
   const shops = await Shop.find().populate('category');
   return shops;
 };
+
+export const updateShop = async (shopId, req) => {
+  return new Promise((resolve, reject) => {
+    const uploadFields = upload.fields([
+      { name: "logo", maxCount: 1 },
+      { name: "coverPhoto", maxCount: 1 },
+    ]);
+
+    uploadFields(req, null, async (err) => {
+      if (err) {
+        return reject(err);
+      }
+
+      try {
+        const {
+          name,
+          description,
+          location,
+          openingHours,
+          category,
+          phoneNumber
+        } = req.body;
+
+        const logoFile = req.files?.logo?.[0];
+        const coverFile = req.files?.coverPhoto?.[0];
+
+        const shop = await Shop.findById(shopId);
+        if (!shop) {
+          const error = new Error("Shop not found");
+          error.status = 404;
+          return reject(error);
+        }
+
+        const updateData = {
+          name: name || shop.name,
+          description: description || shop.description,
+          location: location || shop.location,
+          openingHours: openingHours || shop.openingHours,
+          phoneNumber: phoneNumber || shop.phoneNumber
+        };
+
+        if (logoFile) {
+          updateData.logo = `/storages/${logoFile.filename}`;
+        }
+
+        if (coverFile) {
+          updateData.coverPhoto = `/storages/${coverFile.filename}`;
+        }
+
+        if (category) {
+          const existingCategory = await Category.findOne({ name: category });
+          if (!existingCategory) {
+            const error = new Error("Category not found");
+            error.status = 404;
+            return reject(error);
+          }
+          updateData.category = existingCategory._id;
+        }
+
+        const updatedShop = await Shop.findByIdAndUpdate(shopId, updateData, { new: true }).populate('category');
+        resolve(updatedShop);
+
+      } catch (error) {
+        reject(error);
+      }
+    });
+  });
+};
+
+export const deleteShop = async (shopId) => {
+  const shop = await Shop.findByIdAndDelete(shopId);
+  if (!shop) {
+    const error = new Error("Shop not found");
+    error.status = 404;
+    throw error;
+  }
+  return shop;
+};
+
+export const getShopByCategory = async (categoryId) => {
+  const shops = await Shop.find({ category: categoryId }).populate('category');
+  if (!shops || shops.length === 0) {
+    const error = new Error("No shops found for this category");
+    error.status = 404;
+    throw error;
+  }
+  return shops;
+};
+
+export const getAllCategory = async () => {
+  const categories = await Category.find();
+  if (!categories || categories.length === 0) {
+    const error = new Error("No categories found");
+    error.status = 404;
+    throw error;
+  }
+  return categories;
+};

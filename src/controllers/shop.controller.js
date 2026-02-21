@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { addShop } from '../services/shop.service.js'
 import verifyToken from "../middlewares/verifyToken.js";
 import authorizeRoles from "../middlewares/authorizeRole.js";
-import { addCategory, getShopList } from '../services/shop.service.js';
+import { addCategory,
+  getShopList, updateShop, getShopByCategory, getAllCategory } from '../services/shop.service.js';
 
 const router = Router()
 
@@ -14,6 +15,20 @@ router.post(
     try {
       const shop = await addShop(req);
       res.status(201).json({ shop });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.put(
+  "/:shopId",
+  verifyToken,
+  authorizeRoles("admin", "shop"),
+  async (req, res, next) => {
+    try {
+      const updatedShop = await updateShop(req.params.shopId, req);
+      res.status(200).json({ shop: updatedShop });
     } catch (error) {
       next(error);
     }
@@ -35,14 +50,52 @@ router.post(
 );
 
 router.get(
-  "/list",
+  "/",
   async (req, res, next) => {
-  try {
-    const shops = await getShopList();
-    res.status(200).json({ shops });
-  } catch (error) {
-    next(error);
-  }
+    try {
+      const shops = await getAllShops();
+      res.status(200).json({ shops });
+    } catch (error) {
+      next(error);
+    }
 });
+
+router.get(
+  "/category",
+  async (req, res, next) => {
+    try {
+      const categories = await getAllCategory();
+      res.status(200).json({ categories });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
+  "/category/:categoryId",
+  async (req, res, next) => {
+    try {
+      const shops = await getShopByCategory(req.params.categoryId);
+      res.status(200).json({ shops });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.delete(
+  "/delete/:shopId",
+  verifyToken,
+  authorizeRoles("admin"),
+  async (req, res, next) => {
+    try {
+      const shop = await deleteShop(req.params.shopId);
+      res.status(200).json({ shop });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 export default router;

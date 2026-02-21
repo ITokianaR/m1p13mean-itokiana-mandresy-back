@@ -25,15 +25,26 @@ JWT_SECRET=5dd4a5de29b67e9dd0e8b29ff4a6b8a9
 You can test these routes using Postman or Thunderclient
 
 ```bash
-# GET protected routes 
+# GET routes 
 # Don't forget to add token bearers from login in Headers section when running it
 http://localhost:3000/api/users/admin
 http://localhost:3000/api/users/shop
 http://localhost:3000/api/users/client
+http://localhost:3000/api/shops
+http://localhost:3000/api/shops/category
+http://localhost:3000/api/shops/category/:categoryId
 
 # POST routes
 http://localhost:3000/api/auth/login
 http://localhost:3000/api/auth/register
+http://localhost:3000/api/shops/add
+http://localhost:3000/api/shops/category/add
+
+# PUT route
+http://localhost:3000/api/shops/:shopId
+
+# DELETE route
+http://localhost:3000/api/shops/delete/:shopId
 
 # Dummy json datas to test
 login
