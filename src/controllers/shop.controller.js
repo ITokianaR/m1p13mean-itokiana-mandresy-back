@@ -3,7 +3,8 @@ import { addShop } from '../services/shop.service.js'
 import verifyToken from "../middlewares/verifyToken.js";
 import authorizeRoles from "../middlewares/authorizeRole.js";
 import { addCategory,
-  getShopList, updateShop, getShopByCategory, getAllCategory, getShopById } from '../services/shop.service.js';
+  getShopList, updateShop, getShopByCategory, getAllCategory, getShopById, updateCategory } 
+  from '../services/shop.service.js';
 
 const router = Router()
 
@@ -29,6 +30,20 @@ router.put(
     try {
       const updatedShop = await updateShop(req.params.shopId, req);
       res.status(200).json({ shop: updatedShop });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.put(
+  "/category/:categoryId",
+  verifyToken,
+  authorizeRoles("admin"),
+  async (req, res, next) => {
+    try {
+      const updatedCategory = await updateCategory(req.params.categoryId, req.body);
+      res.status(200).json({ category: updatedCategory });
     } catch (error) {
       next(error);
     }

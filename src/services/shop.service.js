@@ -11,6 +11,7 @@ export const addCategory = async (input) => {
 
     const name = input.name;
     const description = input.description;
+    const icon = input.icon;
 
     const existingCategory = await Category.findOne({ name });
     if (existingCategory) {
@@ -22,6 +23,7 @@ export const addCategory = async (input) => {
     const category = await Category.create({
         name: name,
         description: description,
+        icon: icon
     });
 
     return category;
@@ -196,6 +198,42 @@ export const getAllCategory = async () => {
     throw error;
   }
   return categories;
+};
+
+export const updateCategory = async (categoryId, input) => {
+  if (!input || (!input.name && !input.description && !input.icon)) {
+    const error = new Error("Invalid input data");
+    error.status = 400;
+    throw error;
+  }
+
+  const category = await Category.findById(categoryId);
+  if (!category) {
+    const error = new Error("Category not found");
+    error.status = 404;
+    throw error;
+  }
+
+  if (input.name && input.name !== category.name) {
+    const existingCategory = await Category.findOne({ name: input.name });
+    if (existingCategory) {
+      const error = new Error("Category already exists");
+      error.status = 409;
+      throw error;
+    }
+  }
+
+  const updatedCategory = await Category.findByIdAndUpdate(
+    categoryId,
+    {
+      name: input.name || category.name,
+      description: input.description || category.description,
+      icon: input.icon || category.icon
+    },
+    { new: true }
+  );
+
+  return updatedCategory;
 };
 
 export const getShopById = async (shopId) => {
