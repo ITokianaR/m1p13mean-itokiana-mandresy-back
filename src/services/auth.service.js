@@ -81,9 +81,6 @@ export const signIn = async (input) => {
 
     return {
         token,
-        user: {
-            email: user.email,
-            username: user.username
-        }
+        user: user
     };
 }
