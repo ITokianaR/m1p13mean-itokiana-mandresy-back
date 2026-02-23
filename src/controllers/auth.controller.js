@@ -6,8 +6,8 @@ const router = Router();
 router.post(
     '/register', async (req, res, next) => {
         try{
-            const user = await signUp(req.body);
-            res.json({ user });
+            const userCreated = await signUp(req.body);
+            res.json({ userCreated });
         } catch (error) {
             next(error);
         }

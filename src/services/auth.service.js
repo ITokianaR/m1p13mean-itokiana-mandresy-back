@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import JWT from 'jsonwebtoken';
 
 export const signUp = async (input) => {
-    if (!input || !input.email || !input.username || !input.password || !input.fullname) {
+    if (!input || !input.email || !input.username || !input.password || !input.fullname || !input.gender) {
         const error = new Error("Invalid input data");
         error.status = 400;
         throw error;
@@ -11,6 +11,7 @@ export const signUp = async (input) => {
 
     const username = input.username;
     const fullname = input.fullname;
+    const gender = input.gender;
     const email = input.email.toLowerCase();
     const password = input.password;
     const role = input.role || 'client';
@@ -34,12 +35,22 @@ export const signUp = async (input) => {
     const user = await User.create({
         username: username,
         fullname: fullname,
+        gender: gender,
         email: email,
         password : hashedPassword,
         role : role,
     });
 
-    return user;
+    const token = JWT.sign(
+        { id: user._id, role:user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+    )
+
+    return {
+        token,
+        user : user,
+    };
 }
 
 export const signIn = async (input) => {
