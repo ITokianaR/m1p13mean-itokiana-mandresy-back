@@ -197,3 +197,13 @@ export const getAllCategory = async () => {
   }
   return categories;
 };
+
+export const getShopById = async (shopId) => {
+  const shop = await Shop.findById(shopId).populate('category');
+  if (!shop) {
+    const error = new Error("Shop not found");
+    error.status = 404;
+    throw error;
+  }
+  return shop;
+};

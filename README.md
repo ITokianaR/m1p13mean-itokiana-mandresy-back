@@ -27,12 +27,15 @@ You can test these routes using Postman or Thunderclient
 ```bash
 # GET routes 
 # Don't forget to add token bearers from login in Headers section when running it
-http://localhost:3000/api/users/admin
-http://localhost:3000/api/users/shop
-http://localhost:3000/api/users/client
 http://localhost:3000/api/shops
+http://localhost:3000/api/shops/:shopId
 http://localhost:3000/api/shops/category
 http://localhost:3000/api/shops/category/:categoryId
+
+http://localhost:3000/api/events
+http://localhost:3000/api/events/:eventId
+http://localhost:3000/api/events/category
+http://localhost:3000/api/events/category/:categoryId
 
 # POST routes
 http://localhost:3000/api/auth/login
@@ -42,9 +45,11 @@ http://localhost:3000/api/shops/category/add
 
 # PUT route
 http://localhost:3000/api/shops/:shopId
+http://localhost:3000/api/events/:eventsId
 
 # DELETE route
 http://localhost:3000/api/shops/delete/:shopId
+http://localhost:3000/api/events/delete/:eventsId
 
 # Dummy json datas to test
 login

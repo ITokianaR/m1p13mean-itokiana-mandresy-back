@@ -24,6 +24,7 @@ export const getEventById = async (eventId) => {
 
     return event;
 };
+
 export const addEvent = async (req) => {
     const uploadSingle = upload.single('image');
 

@@ -3,7 +3,7 @@ import { addShop } from '../services/shop.service.js'
 import verifyToken from "../middlewares/verifyToken.js";
 import authorizeRoles from "../middlewares/authorizeRole.js";
 import { addCategory,
-  getShopList, updateShop, getShopByCategory, getAllCategory } from '../services/shop.service.js';
+  getShopList, updateShop, getShopByCategory, getAllCategory, getShopById } from '../services/shop.service.js';
 
 const router = Router()
 
@@ -91,6 +91,18 @@ router.delete(
   async (req, res, next) => {
     try {
       const shop = await deleteShop(req.params.shopId);
+      res.status(200).json({ shop });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
+  "/:shopId",
+  async (req, res, next) => {
+    try {
+      const shop = await getShopById(req.params.shopId);
       res.status(200).json({ shop });
     } catch (error) {
       next(error);
