@@ -68,7 +68,7 @@ router.get(
   "/",
   async (req, res, next) => {
     try {
-      const shops = await getAllShops();
+      const shops = await getShopList();
       res.status(200).json({ shops });
     } catch (error) {
       next(error);
