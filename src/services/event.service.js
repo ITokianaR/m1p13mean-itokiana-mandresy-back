@@ -88,22 +88,58 @@ export const addEvent = async (req) => {
     });
 };
 
-export const updateEvent = async (eventId, input) => {
-    if (!eventId) {
-        const error = new Error("Event ID is required");
-        error.status = 400;
-        throw error;
-    }
+export const updateEvent = async (eventId, req) => {
+  return new Promise((resolve, reject) => {
+    const uploadFields = upload.fields([
+      { name: "image", maxCount: 1 },
+    ]);
 
-    const event = await Event.findByIdAndUpdate(eventId, input, { new: true });
+    uploadFields(req, null, async (err) => {
+      if (err) return reject(err);
 
-    if (!event) {
-        const error = new Error("Event not found");
-        error.status = 404;
-        throw error;
-    }
+      try {
+        const { title, description, eventDateTime, location, price, isFree } = req.body;
+        const imageFile = req.files?.image?.[0];
 
-    return event;
+        const event = await Event.findById(eventId);
+        if (!event) {
+          const error = new Error("Event not found");
+          error.status = 404;
+          return reject(error);
+        }
+
+        const updateData = {
+          title:         title         || event.title,
+          description:   description   || event.description,
+          eventDateTime: eventDateTime || event.eventDateTime,
+          location:      location      || event.location,
+          price:         price         ?? event.price,
+          isFree:        isFree !== undefined ? isFree === 'true' : event.isFree,
+        };
+
+        if (imageFile) updateData.image = `/storages/${imageFile.filename}`;
+
+        if (req.body.category) {
+          const existingCategory = await EventCategory.findById(req.body.category);
+          if (!existingCategory) {
+            const error = new Error("Catégorie introuvable");
+            error.status = 404;
+            return reject(error);
+          }
+          updateData.category = existingCategory._id;
+        }
+
+        const updatedEvent = await Event.findByIdAndUpdate(eventId, updateData, { new: true })
+          .populate('category')
+          .populate('shop');
+
+        resolve(updatedEvent);
+
+      } catch (error) {
+        reject(error);
+      }
+    });
+  });
 };
 
 export const deleteEvent = async (eventId) => {

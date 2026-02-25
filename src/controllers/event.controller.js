@@ -60,7 +60,7 @@ router.put(
     authorizeRoles("admin", "shop"),
     async (req, res, next) => {
         try {
-            const updatedEvent = await updateEvent(req.params.eventId, req.body);
+            const updatedEvent = await updateEvent(req.params.eventId, req);
             res.status(200).json({ event: updatedEvent });
         } catch (error) {
             next(error);
