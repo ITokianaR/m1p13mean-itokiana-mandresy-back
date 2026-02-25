@@ -9,11 +9,7 @@ export const addCategory = async (input) => {
         throw error;
     }
 
-    const name = input.name;
-    const description = input.description;
-    const icon = input.icon;
-
-    const existingCategory = await Category.findOne({ name });
+    const existingCategory = await Category.findOne({ name: input.name });
     if (existingCategory) {
         const error = new Error("Category already exists");
         error.status = 409;
@@ -21,13 +17,12 @@ export const addCategory = async (input) => {
     }
 
     const category = await Category.create({
-        name: name,
-        description: description,
-        icon: icon
+        name: input.name,
+        description: input.description,
     });
 
     return category;
-}
+};
 
 export const addShop = async (req) => {
   return new Promise((resolve, reject) => {
@@ -38,54 +33,43 @@ export const addShop = async (req) => {
     ]);
 
     uploadFields(req, null, async (err) => {
-      if (err) {
-        return reject(err);
-      }
+      if (err) return reject(err);
 
       try {
-        const {
-          name,
-          description,
-          location,
-          openingHours,
-          category,
-          phoneNumber
-        } = req.body;
+        const { name, description, location, openingHours, category, phoneNumber } = req.body;
 
-        const logoFile = req.files?.logo?.[0];
-        const coverFile = req.files?.coverPhoto?.[0];
+        const logoFile    = req.files?.logo?.[0];
+        const coverFile   = req.files?.coverPhoto?.[0];
 
-        if (
-          !name ||
-          !description ||
-          !location ||
-          !category ||
-          !logoFile ||
-          !phoneNumber ||
-          !coverFile
-        ) {
-          const error = new Error("Invalid input data");
+        if (!name || !description || !location || !category || !logoFile || !coverFile) {
+          const error = new Error("Champs requis manquants (name, description, location, category, logo, coverPhoto)");
           error.status = 400;
           return reject(error);
         }
 
-        const existingCategory = await Category.findOne({ name: category });
-
+        // ✅ CORRIGÉ : on cherche par _id (le frontend envoie l'_id de la catégorie)
+        const existingCategory = await Category.findById(category);
         if (!existingCategory) {
-          const error = new Error("Category not found");
+          const error = new Error("Catégorie introuvable");
           error.status = 404;
           return reject(error);
+        }
+
+        // location arrive en JSON string depuis le FormData, on le parse
+        let parsedLocation = location;
+        if (typeof location === 'string') {
+          try { parsedLocation = JSON.parse(location); } catch(e) {}
         }
 
         const shop = await Shop.create({
           name,
           description,
-          location,
-          openingHours,
+          location: parsedLocation,
+          openingHours: openingHours || undefined,
           category: existingCategory._id,
-          logo: `/storages/${logoFile.filename}`,
+          logo:       `/storages/${logoFile.filename}`,
           coverPhoto: `/storages/${coverFile.filename}`,
-          phoneNumber
+          phoneNumber: phoneNumber || null
         });
 
         resolve(shop);
@@ -110,21 +94,11 @@ export const updateShop = async (shopId, req) => {
     ]);
 
     uploadFields(req, null, async (err) => {
-      if (err) {
-        return reject(err);
-      }
+      if (err) return reject(err);
 
       try {
-        const {
-          name,
-          description,
-          location,
-          openingHours,
-          category,
-          phoneNumber
-        } = req.body;
-
-        const logoFile = req.files?.logo?.[0];
+        const { name, description, location, openingHours, category, phoneNumber } = req.body;
+        const logoFile  = req.files?.logo?.[0];
         const coverFile = req.files?.coverPhoto?.[0];
 
         const shop = await Shop.findById(shopId);
@@ -134,26 +108,28 @@ export const updateShop = async (shopId, req) => {
           return reject(error);
         }
 
+        // location arrive en JSON string depuis le FormData
+        let parsedLocation = location;
+        if (typeof location === 'string') {
+          try { parsedLocation = JSON.parse(location); } catch(e) {}
+        }
+
         const updateData = {
-          name: name || shop.name,
-          description: description || shop.description,
-          location: location || shop.location,
+          name:         name         || shop.name,
+          description:  description  || shop.description,
+          location:     parsedLocation || shop.location,
           openingHours: openingHours || shop.openingHours,
-          phoneNumber: phoneNumber || shop.phoneNumber
+          phoneNumber:  phoneNumber  || shop.phoneNumber
         };
 
-        if (logoFile) {
-          updateData.logo = `/storages/${logoFile.filename}`;
-        }
-
-        if (coverFile) {
-          updateData.coverPhoto = `/storages/${coverFile.filename}`;
-        }
+        if (logoFile)  updateData.logo       = `/storages/${logoFile.filename}`;
+        if (coverFile) updateData.coverPhoto  = `/storages/${coverFile.filename}`;
 
         if (category) {
-          const existingCategory = await Category.findOne({ name: category });
+          // ✅ CORRIGÉ : cherche par _id
+          const existingCategory = await Category.findById(category);
           if (!existingCategory) {
-            const error = new Error("Category not found");
+            const error = new Error("Catégorie introuvable");
             error.status = 404;
             return reject(error);
           }
@@ -182,58 +158,12 @@ export const deleteShop = async (shopId) => {
 
 export const getShopByCategory = async (categoryId) => {
   const shops = await Shop.find({ category: categoryId }).populate('category');
-  if (!shops || shops.length === 0) {
-    const error = new Error("No shops found for this category");
-    error.status = 404;
-    throw error;
-  }
-  return shops;
+  return shops; // retourne tableau vide si aucun résultat, pas d'erreur 404
 };
 
 export const getAllCategory = async () => {
   const categories = await Category.find();
-  if (!categories || categories.length === 0) {
-    const error = new Error("No categories found");
-    error.status = 404;
-    throw error;
-  }
   return categories;
-};
-
-export const updateCategory = async (categoryId, input) => {
-  if (!input || (!input.name && !input.description && !input.icon)) {
-    const error = new Error("Invalid input data");
-    error.status = 400;
-    throw error;
-  }
-
-  const category = await Category.findById(categoryId);
-  if (!category) {
-    const error = new Error("Category not found");
-    error.status = 404;
-    throw error;
-  }
-
-  if (input.name && input.name !== category.name) {
-    const existingCategory = await Category.findOne({ name: input.name });
-    if (existingCategory) {
-      const error = new Error("Category already exists");
-      error.status = 409;
-      throw error;
-    }
-  }
-
-  const updatedCategory = await Category.findByIdAndUpdate(
-    categoryId,
-    {
-      name: input.name || category.name,
-      description: input.description || category.description,
-      icon: input.icon || category.icon
-    },
-    { new: true }
-  );
-
-  return updatedCategory;
 };
 
 export const getShopById = async (shopId) => {

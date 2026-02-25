@@ -1,13 +1,20 @@
 import { Router } from 'express';
-import { addShop } from '../services/shop.service.js'
 import verifyToken from "../middlewares/verifyToken.js";
 import authorizeRoles from "../middlewares/authorizeRole.js";
-import { addCategory,
-  getShopList, updateShop, getShopByCategory, getAllCategory, getShopById, updateCategory } 
-  from '../services/shop.service.js';
+import {
+  addShop,
+  addCategory,
+  getShopList,      // 
+  updateShop,
+  getShopByCategory,
+  getAllCategory,
+  getShopById,
+  deleteShop        // 
+} from '../services/shop.service.js';
 
-const router = Router()
+const router = Router();
 
+// POST /api/shops/add 
 router.post(
   "/add",
   verifyToken,
@@ -22,6 +29,7 @@ router.post(
   }
 );
 
+//  PUT /api/shops/:shopId 
 router.put(
   "/:shopId",
   verifyToken,
@@ -36,20 +44,7 @@ router.put(
   }
 );
 
-router.put(
-  "/category/:categoryId",
-  verifyToken,
-  authorizeRoles("admin"),
-  async (req, res, next) => {
-    try {
-      const updatedCategory = await updateCategory(req.params.categoryId, req.body);
-      res.status(200).json({ category: updatedCategory });
-    } catch (error) {
-      next(error);
-    }
-  }
-);
-
+// POST /api/shops/category/add
 router.post(
   "/category/add",
   verifyToken,
@@ -64,17 +59,20 @@ router.post(
   }
 );
 
+//  GET /api/shops/
 router.get(
   "/",
   async (req, res, next) => {
     try {
-      const shops = await getShopList();
+      const shops = await getShopList(); // 
       res.status(200).json({ shops });
     } catch (error) {
       next(error);
     }
-});
+  }
+);
 
+//  GET /api/shops/category 
 router.get(
   "/category",
   async (req, res, next) => {
@@ -87,6 +85,7 @@ router.get(
   }
 );
 
+// GET /api/shops/category/:categoryId
 router.get(
   "/category/:categoryId",
   async (req, res, next) => {
@@ -99,6 +98,7 @@ router.get(
   }
 );
 
+// DELETE /api/shops/delete/:shopId 
 router.delete(
   "/delete/:shopId",
   verifyToken,
@@ -113,6 +113,7 @@ router.delete(
   }
 );
 
+// GET /api/shops/:shopId 
 router.get(
   "/:shopId",
   async (req, res, next) => {
