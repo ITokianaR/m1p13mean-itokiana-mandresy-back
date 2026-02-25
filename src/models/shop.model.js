@@ -74,6 +74,7 @@ const shopSchema = new Schema({
     ref: 'Category', 
     required: true 
   },
+  
 
   logo: { type: String, required: true },
   coverPhoto: { type: String, required: true },
