@@ -2,6 +2,7 @@ import Event from '../models/event.model.js';
 import EventCategory from '../models/eventcategory.model.js';
 import Shop from '../models/shop.model.js';
 import upload from "../middlewares/multerConfig.js";
+import deleteFileFromStorage from "../middlewares/deleteFile.js";
 
 export const getAllEvents = async () => {
     const events = await Event.find().populate('shop').populate('category');
@@ -117,7 +118,11 @@ export const updateEvent = async (eventId, req) => {
           isFree:        isFree !== undefined ? isFree === 'true' : event.isFree,
         };
 
-        if (imageFile) updateData.image = `/storages/${imageFile.filename}`;
+        if (imageFile) {
+            // Delete old image if it exists
+            deleteFileFromStorage(event.image);
+            updateData.image = `/storages/${imageFile.filename}`;
+        }
 
         if (req.body.category) {
           const existingCategory = await EventCategory.findById(req.body.category);
@@ -155,6 +160,8 @@ export const deleteEvent = async (eventId) => {
         error.status = 404;
         throw error;
     }
+
+    deleteFileFromStorage(event.image);
 
     return event;
 };

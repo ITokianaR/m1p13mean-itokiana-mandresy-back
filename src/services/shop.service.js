@@ -1,6 +1,7 @@
 import Category from '../models/category.model.js';
 import Shop from '../models/shop.model.js';
 import upload from "../middlewares/multerConfig.js";
+import deleteFileFromStorage from "../middlewares/deleteFile.js";
 
 export const addCategory = async (input) => {
     if (!input || !input.name || !input.description) {
@@ -122,8 +123,16 @@ export const updateShop = async (shopId, req) => {
           phoneNumber:  phoneNumber  || shop.phoneNumber
         };
 
-        if (logoFile)  updateData.logo       = `/storages/${logoFile.filename}`;
-        if (coverFile) updateData.coverPhoto  = `/storages/${coverFile.filename}`;
+        if (logoFile) {
+        // Delete old logo if it exists
+          deleteFileFromStorage(shop.logo);
+          updateData.logo = `/storages/${logoFile.filename}`;
+        }
+        if (coverFile) {
+          // Delete old cover photo if it exists
+          deleteFileFromStorage(shop.coverPhoto);
+          updateData.coverPhoto = `/storages/${coverFile.filename}`;
+        }
 
         if (category) {
           // ✅ CORRIGÉ : cherche par _id
@@ -153,6 +162,10 @@ export const deleteShop = async (shopId) => {
     error.status = 404;
     throw error;
   }
+
+  deleteFileFromStorage(shop.logo);
+  deleteFileFromStorage(shop.coverPhoto);
+
   return shop;
 };
 
