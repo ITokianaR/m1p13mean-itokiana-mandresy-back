@@ -4,11 +4,13 @@ import AuthController from '../controllers/auth.controller.js';
 import shopController from '../controllers/shop.controller.js';
 import EventController from '../controllers/event.controller.js';
 import ReviewController from '../controllers/review.controller.js';
+import ProductController from '../controllers/product.controller.js';
 
 const router = Router();
 
 router.use('/auth', AuthController);
 router.use('/shops', shopController);
+router.use('/products', ProductController);
 router.use('/events', EventController);
 router.use('/reviews', ReviewController);
 router.use('/users', userRoute);
