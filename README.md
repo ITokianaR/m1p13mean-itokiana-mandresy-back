@@ -80,3 +80,14 @@ Please make sure to update tests as appropriate.
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
+
+# Google OAuth
+GOOGLE_CLIENT_ID=453868918785-61tuh0bcb5skljoelvi4e8uik18p5g9n.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+
+# Frontend URL
+FRONTEND_URL=http://localhost:4200
+
+# Email service
+EMAIL_USER=mandresyrakotonanahary@gmail.com
+EMAIL_PASS=lnsq jpnm wreg chts
