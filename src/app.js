@@ -3,6 +3,9 @@ import cors from "cors";
 import passport from "passport";
 import databaseConnection from "./config/database.js";
 import { configDotenv } from "dotenv";
+import path from 'path';
+import { fileURLToPath } from 'url';
+import bodyParser from "body-parser";
 
 configDotenv();
 
@@ -14,6 +17,9 @@ await databaseConnection();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // MIDDLEWARES
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:4200',
@@ -22,7 +28,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/storages", express.static("storages"));
+app.use('/storages', express.static(path.join(__dirname, '../storages')));
 
 initPassport();
 app.use(passport.initialize());
