@@ -1,34 +1,40 @@
 import express from "express";
 import cors from "cors";
-import path from 'path';
-import { fileURLToPath } from 'url';
-import bodyParser from "body-parser";
+import passport from "passport";
 import databaseConnection from "./config/database.js";
 import { configDotenv } from "dotenv";
 
-import route from "./routes/route.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 configDotenv();
-await databaseConnection();
-const app = express();
 
+import route from "./routes/route.js";
+import { initPassport } from "./controllers/auth.controller.js"; 
+
+await databaseConnection();
+
+const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+// MIDDLEWARES
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:4200',
+  credentials: true
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/storages', express.static(path.join(__dirname, '../storages')));
+app.use("/storages", express.static("storages"));
 
+initPassport();
+app.use(passport.initialize());
+
+// ROUTES 
 app.use('/api', route);
 
+// GESTION DES ERREURS 
 app.use((err, req, res, next) => {
-    res.status(err.status || 500).json({
-        message: err.message
-    });
+  res.status(err.status || 500).json({
+    message: err.message
+  });
 });
 
 app.listen(PORT, () => {
