@@ -1,4 +1,5 @@
 import User from '../models/user.model.js';
+import Shop from '../models/shop.model.js';
 import bcrypt from 'bcryptjs';
 import JWT from 'jsonwebtoken';
 import crypto from 'crypto';
@@ -19,6 +20,20 @@ export const signUp = async (input) => {
   const password      = input.password;
   const role          = input.role || 'client';
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  if (role === 'shop') {
+    if (!input.shopId) {
+      const error = new Error("shopId is required for shop role");
+      error.status = 400;
+      throw error;
+    }
+    const existingShop = await Shop.findById(input.shopId);
+    if (!existingShop) {
+      const error = new Error("Shop not found");
+      error.status = 404;
+      throw error;
+    }
+  }
 
   const existingEmail = await User.findOne({ email });
   if (existingEmail) {
@@ -41,6 +56,7 @@ export const signUp = async (input) => {
     email,
     password: hashedPassword,
     role,
+    shop: role === 'shop' ? input.shopId : undefined,
   });
 
   const token = JWT.sign(

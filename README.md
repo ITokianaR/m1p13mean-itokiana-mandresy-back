@@ -53,20 +53,6 @@ http://localhost:3000/api/events/:eventsId
 http://localhost:3000/api/shops/delete/:shopId
 http://localhost:3000/api/events/delete/:eventsId
 
-# Dummy json datas to test
-login
-{
-    "email": "admin@mongo.fr",
-    "password": "admin1234"
-}
-register
-{
-    "username": "john",
-    "fullname": "doe",
-    "email": "johndoe@dummy.john",
-    "password": "pwdspecial",
-    "role": "shop"
-}
 
 ```
 
