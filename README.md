@@ -14,12 +14,12 @@ npm run dev
 ```
 ## Create .env
 
-Remove .example and .env.example and insert your own credentials
+Remove .example from .env.example and insert your own credentials
 
 ```bash
-DB_USERNAME=itokiana
-DB_PASSWORD=itokiana
-JWT_SECRET=5dd4a5de29b67e9dd0e8b29ff4a6b8a9
+DB_USERNAME=
+DB_PASSWORD=
+JWT_SECRET=
 ```
 
 ## Available routes as of now
@@ -66,14 +66,3 @@ Please make sure to update tests as appropriate.
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
-
-# Google OAuth
-GOOGLE_CLIENT_ID=453868918785-61tuh0bcb5skljoelvi4e8uik18p5g9n.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
-
-# Frontend URL
-FRONTEND_URL=http://localhost:4200
-
-# Email service
-EMAIL_USER=mandresyrakotonanahary@gmail.com
-EMAIL_PASS=lnsq jpnm wreg chts
