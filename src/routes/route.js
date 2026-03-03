@@ -1,18 +1,22 @@
 import { Router } from 'express';
-import userRoute from './userRoute.js';
-import AuthController from '../controllers/auth.controller.js';
-import shopController from '../controllers/shop.controller.js';
-import EventController from '../controllers/event.controller.js';
-import ReviewController from '../controllers/review.controller.js';
+import userRoute         from './userRoute.js';
+import AuthController    from '../controllers/auth.controller.js';
+import shopController    from '../controllers/shop.controller.js';
+import EventController   from '../controllers/event.controller.js';
+import ReviewController  from '../controllers/review.controller.js';
 import ProductController from '../controllers/product.controller.js';
+import cartController    from '../controllers/cart_controller.js';    // 🆕
+import orderController   from '../controllers/order_controller.js';   // 🆕
 
 const router = Router();
 
-router.use('/auth', AuthController);
-router.use('/shops', shopController);
+router.use('/auth',     AuthController);
+router.use('/shops',    shopController);
 router.use('/products', ProductController);
-router.use('/events', EventController);
-router.use('/reviews', ReviewController);
-router.use('/users', userRoute);
+router.use('/events',   EventController);
+router.use('/reviews',  ReviewController);
+router.use('/users',    userRoute);
+router.use('/cart',     cartController);   // 🆕
+router.use('/orders',   orderController);  // 🆕
 
 export default router;

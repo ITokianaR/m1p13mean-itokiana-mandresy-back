@@ -6,6 +6,8 @@ import { configDotenv } from "dotenv";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import bodyParser from "body-parser";
+import cartRouter  from './controllers/cart_controller.js';
+import orderRouter from './controllers/order_controller.js';
 
 configDotenv();
 
@@ -29,6 +31,8 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/storages', express.static(path.join(__dirname, '../storages')));
+app.use('/api/cart',   cartRouter);
+app.use('/api/orders', orderRouter);
 
 initPassport();
 app.use(passport.initialize());
