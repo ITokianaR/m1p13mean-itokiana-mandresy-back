@@ -4,17 +4,18 @@ import authorizeRoles from "../middlewares/authorizeRole.js";
 import {
   addShop,
   addCategory,
-  getShopList,      // 
+  getShopList,
   updateShop,
   getShopByCategory,
   getAllCategory,
   getShopById,
-  deleteShop        // 
+  deleteShop,
+  getRandomRestaurant  // 🎲 NOUVEAU
 } from '../services/shop.service.js';
 
 const router = Router();
 
-// POST /api/shops/add 
+// POST /api/shops/add
 router.post(
   "/add",
   verifyToken,
@@ -29,7 +30,7 @@ router.post(
   }
 );
 
-//  PUT /api/shops/:shopId 
+// PUT /api/shops/:shopId
 router.put(
   "/:shopId",
   verifyToken,
@@ -59,12 +60,12 @@ router.post(
   }
 );
 
-//  GET /api/shops/
+// GET /api/shops/
 router.get(
   "/",
   async (req, res, next) => {
     try {
-      const shops = await getShopList(); // 
+      const shops = await getShopList();
       res.status(200).json({ shops });
     } catch (error) {
       next(error);
@@ -72,13 +73,27 @@ router.get(
   }
 );
 
-//  GET /api/shops/category 
+// GET /api/shops/category
 router.get(
   "/category",
   async (req, res, next) => {
     try {
       const categories = await getAllCategory();
       res.status(200).json({ categories });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 🎲 NOUVEAU — GET /api/shops/random/restaurant
+// ⚠️ Doit être placé AVANT /:shopId
+router.get(
+  "/random/restaurant",
+  async (req, res, next) => {
+    try {
+      const shop = await getRandomRestaurant();
+      res.status(200).json({ shop });
     } catch (error) {
       next(error);
     }
@@ -98,7 +113,7 @@ router.get(
   }
 );
 
-// DELETE /api/shops/delete/:shopId 
+// DELETE /api/shops/delete/:shopId
 router.delete(
   "/delete/:shopId",
   verifyToken,
@@ -113,7 +128,7 @@ router.delete(
   }
 );
 
-// GET /api/shops/:shopId 
+// GET /api/shops/:shopId
 router.get(
   "/:shopId",
   async (req, res, next) => {

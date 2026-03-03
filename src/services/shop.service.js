@@ -48,7 +48,6 @@ export const addShop = async (req) => {
           return reject(error);
         }
 
-        // ✅ CORRIGÉ : on cherche par _id (le frontend envoie l'_id de la catégorie)
         const existingCategory = await Category.findById(category);
         if (!existingCategory) {
           const error = new Error("Catégorie introuvable");
@@ -56,7 +55,6 @@ export const addShop = async (req) => {
           return reject(error);
         }
 
-        // location arrive en JSON string depuis le FormData, on le parse
         let parsedLocation = location;
         if (typeof location === 'string') {
           try { parsedLocation = JSON.parse(location); } catch(e) {}
@@ -109,7 +107,6 @@ export const updateShop = async (shopId, req) => {
           return reject(error);
         }
 
-        // location arrive en JSON string depuis le FormData
         let parsedLocation = location;
         if (typeof location === 'string') {
           try { parsedLocation = JSON.parse(location); } catch(e) {}
@@ -124,18 +121,15 @@ export const updateShop = async (shopId, req) => {
         };
 
         if (logoFile) {
-        // Delete old logo if it exists
           deleteFileFromStorage(shop.logo);
           updateData.logo = `/storages/${logoFile.filename}`;
         }
         if (coverFile) {
-          // Delete old cover photo if it exists
           deleteFileFromStorage(shop.coverPhoto);
           updateData.coverPhoto = `/storages/${coverFile.filename}`;
         }
 
         if (category) {
-          // ✅ CORRIGÉ : cherche par _id
           const existingCategory = await Category.findById(category);
           if (!existingCategory) {
             const error = new Error("Catégorie introuvable");
@@ -171,7 +165,7 @@ export const deleteShop = async (shopId) => {
 
 export const getShopByCategory = async (categoryId) => {
   const shops = await Shop.find({ category: categoryId }).populate('category');
-  return shops; // retourne tableau vide si aucun résultat, pas d'erreur 404
+  return shops;
 };
 
 export const getAllCategory = async () => {
@@ -186,5 +180,33 @@ export const getShopById = async (shopId) => {
     error.status = 404;
     throw error;
   }
+  return shop;
+};
+
+// 🎲 NOUVEAU : Sélectionner un restaurant aléatoire
+export const getRandomRestaurant = async () => {
+  const restaurantCategory = await Category.findOne({
+    name: { $regex: /restaur/i }
+  });
+
+  if (!restaurantCategory) {
+    const error = new Error("Catégorie restaurant introuvable");
+    error.status = 404;
+    throw error;
+  }
+
+  const count = await Shop.countDocuments({ category: restaurantCategory._id });
+
+  if (count === 0) {
+    const error = new Error("Aucun restaurant disponible");
+    error.status = 404;
+    throw error;
+  }
+
+  const randomIndex = Math.floor(Math.random() * count);
+  const shop = await Shop.findOne({ category: restaurantCategory._id })
+    .skip(randomIndex)
+    .populate('category');
+
   return shop;
 };
