@@ -47,7 +47,7 @@ router.get('/:orderId', async (req, res, next) => {
 // GET /api/orders — toutes les commandes (admin)
 router.get(
   '/',
-  authorizeRoles('admin'),
+  authorizeRoles('admin', 'shop'),
   async (req, res, next) => {
     try {
       const orders = await getAllOrders();
